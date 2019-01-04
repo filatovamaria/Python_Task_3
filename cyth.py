@@ -4,11 +4,12 @@ Created on Sat Dec 22 22:13:58 2018
 
 @author: Masha
 """
+import cythverlet as cv
 
+#def Calculate(x_, y_, z_, u_, v_, w_, m_, tstep):
+    #return cv.Calculate(x_, y_, z_, u_, v_, w_, m_, tstep)
 
-def Calculate(x_, y_, z_, u_, v_, w_, m_, col_):
-   
-    [x_n, y_n, z_n, u_n, v_n, w_n] = [x_, y_, z_, u_, v_, w_]
-    return [x_n, y_n, z_n, u_n, v_n, w_n]
+#def CalculateSolar(x_, y_, z_, u_, v_, w_, m_, tstep):
+    #return cv.CalculateSolar(x_, y_, z_, u_, v_, w_, m_, tstep)
         
        

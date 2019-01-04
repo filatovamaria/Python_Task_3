@@ -56,7 +56,7 @@ def V_n(spd, a_n, a_n1, tistep):
  
 
 
-def Calculate(particle_list, timerStep, timer):
+def Calculate(particle_list, timerStep):
     G = 6.67408 * (10 ** -9)
         
     x_n = []
@@ -89,8 +89,7 @@ def Calculate(particle_list, timerStep, timer):
                 
     length = len(x_n) 
     if length < 2:
-        print('stop')
-        timer.stop()       
+        print('stop')      
             
     ax_n = []
     ay_n = []
@@ -176,7 +175,7 @@ def Calculate(particle_list, timerStep, timer):
         
     
 
-def CalculateSolar(particle_list, timerStep, timer):
+def CalculateSolar(particle_list, timerStep):
     G = 6.67408 * (10 ** -11)
         
     constRadius = 14959787070
@@ -194,8 +193,7 @@ def CalculateSolar(particle_list, timerStep, timer):
                         
     length = len(x_n) 
     if length < 9:
-        print('stop')
-        timer.stop()  
+        print('stop') 
                     
     ax_n = []
     ay_n = []
