@@ -1,0 +1,3 @@
+LIBRARY cythverlet.pyd
+EXPORTS
+PyInit_cythverlet

@@ -4,76 +4,22 @@ Created on Sun Nov 25 22:54:31 2018
 
 @author: Masha
 """
-
-import multi as multi
-import verlet as verlet
-#import cyth as cyt
-#import odint as odin
 import classes as myClass
 
-class Calculations:
-        
-    def CalculateVerlet(particle_list, timerStep):
-        return verlet.Calculate(particle_list, timerStep)                         
-        
-    
-    def CalculateVerletSolar(particle_list, timerStep):
-        return verlet.CalculateSolar(particle_list, timerStep)        
-    
+#import odint as odi
+import verlet as ver
+import multi as mul
+#import opcl as ocl
+#import cyth as cyt
 
+import time
+
+
+def Calculate(mytype, particle_list, timer_step):
+    G = 6.67408 * (10 ** -9)
+    times = []
     
-    
-    def CalculateOdeint(particle_list, timer_step):
-        return 
-    #odin.Calculate(particle_list, timer_step)
-    
-    def CalculateOdeintSolar(particle_list, timer_step):        
-        return 
-    #odin.CalculateSolar(particle_list, timer_step)
-    
-    
-    
-    
-    def CalculateParallSolar(particle_list, timerStep):
-        return multi.CalculateSolar(particle_list, timerStep)
-    
-     
-    def CalculateParall(particle_list, timerStep):
-        return multi.Calculate(particle_list, timerStep) 
-    
-        
-    
-        
-    def CalculateCythonSolar(particle_list, timer_step):
-        constRadius = 14959787070
-        constMass = 5.9726 * 10**24
-        
-        x_n = [p.x * constRadius for p in particle_list]
-        y_n = [p.y * constRadius for p in particle_list]
-        z_n = [p.z * constRadius for p in particle_list]
-        position = [myClass.Position(x, y, z) for x, y, z in zip(x_n, y_n, z_n)]
-        u_n = [p.u for p in particle_list]
-        v_n = [p.v for p in particle_list]
-        w_n = [p.w for p in particle_list]
-        m_n = [p.m * constMass for p in particle_list]
-        col_n = [p.color for p in particle_list]        
-                            
-        length = len(x_n) 
-        _particle_list = []
-#        if length < 9:
-#            print('stop')
-#        else:
-#            x_n1, y_n1, z_n1, u_n1, v_n1, w_n1 = cyt.Calculate(x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
-#            
-#            for i in range(length):
-#                position = myClass.Position(x_n1[i] / constRadius, y_n1[i] / constRadius, z_n1[i] / constRadius)
-#                velocity = myClass.Velocity(u_n1[i], v_n1[i], w_n1[i])
-#                _particle_list.append(myClass.Particle(position, velocity, m_n[i] / constMass, col_n[i]))
-#                            
-        return _particle_list
-    
-    
-    def CalculateCython(particle_list, timer_step):
+    for i in range(5):
         x_n = []
         y_n = []
         z_n = []
@@ -103,15 +49,176 @@ class Calculations:
                     
         length = len(x_n) 
         _particle_list = []
-#        if length < 2:
-#            print('stop')
-#        else:
-#            [x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = cyt.CalculateSolar(x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
-#            
-#            for i in range(length):
-#                position = myClass.Position(x_n1[i], y_n1[i], z_n1[i])
-#                velocity = myClass.Velocity(u_n1[i], v_n1[i], w_n1[i])
-#                _particle_list.append(myClass.Particle(position, velocity, m_n[i], col_n[i]))
-#        
-        return _particle_list
+        if length < 2:
+            print('stop')
+        else:
+            x_n1 = []
+            y_n1 = []
+            z_n1 = []
+            u_n1 = []
+            v_n1 = []
+            w_n1 = []
+            
+            start_time = time.time()
+            
+            if (mytype == 0):
+                print('Odeint')
+                [x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = CalculateOdeint(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+            elif (mytype == 1):
+                print('Verlet')
+                [x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = ver.Calculate(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+            elif (mytype == 2):
+                print('Threads')
+                [x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = mul.Calculate(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+            elif (mytype == 3):
+                print('OpenCL')
+                #[x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = ocl.Calculate(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+            else:
+                print('Cython')
+                #[x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = cyt.Calculate(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+            
+            times.append(time.time() - start_time)
+            
+            for i in range(length):
+                position = myClass.Position(x_n1[i], y_n1[i], z_n1[i])
+                velocity = myClass.Velocity(u_n1[i], v_n1[i], w_n1[i])
+                _particle_list.append(myClass.Particle(position, velocity, m_n[i], col_n[i]))           
+        
+        
+    return times
 
+        
+        
+def CalculateSolar(mytype, particle_list, timer_step):
+    G = 6.67408 * (10 ** -11)
+    constRadius = 14959787070
+    constMass = 5.9726 * 10**24
+    
+    x_n = [p.x * constRadius for p in particle_list]
+    y_n = [p.y * constRadius for p in particle_list]
+    z_n = [p.z * constRadius for p in particle_list]
+    position = [myClass.Position(x, y, z) for x, y, z in zip(x_n, y_n, z_n)]
+    u_n = [p.u for p in particle_list]
+    v_n = [p.v for p in particle_list]
+    w_n = [p.w for p in particle_list]
+    m_n = [p.m * constMass for p in particle_list]
+    col_n = [p.color for p in particle_list]        
+                        
+    length = len(x_n) 
+    _particle_list = []
+    if length < 9:
+        print('stop')
+    else:  
+        x_n1 = []
+        y_n1 = []
+        z_n1 = []
+        u_n1 = []
+        v_n1 = []
+        w_n1 = []
+        if (mytype == 0):
+            print('Odeint')
+            [x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = CalculateOdeint(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+        elif (mytype == 1):
+            print('Verlet')
+            [x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = ver.Calculate(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+        elif (mytype == 2):
+            print('Threads')
+            [x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = mul.Calculate(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+        elif (mytype == 3):
+            print('OpenCL')
+            #[x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = ocl.Calculate(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+        else:
+            print('Cython')
+            #[x_n1, y_n1, z_n1, u_n1, v_n1, w_n1] = cyt.Calculate(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timer_step)
+            
+            
+        for i in range(length):
+            position = myClass.Position(x_n1[i] / constRadius, y_n1[i] / constRadius, z_n1[i] / constRadius)
+            velocity = myClass.Velocity(u_n1[i], v_n1[i], w_n1[i])
+            _particle_list.append(myClass.Particle(position, velocity, m_n[i] / constMass, col_n[i]))
+                        
+    return _particle_list
+
+
+
+from math import sqrt
+from numpy import linspace
+from scipy.integrate import odeint
+
+
+
+def CalculateOdeint(G, x_n, y_n, z_n, u_n, v_n, w_n, m_n, timerStep):
+  
+    length = len(x_n)
+    times = linspace(0, timerStep, 2)
+    
+    def gravitySystem(_y, t):
+        
+        x = []
+        y = []
+        z = []
+        u = []
+        v = []
+        w = []
+        for i in range(length):
+            u.append(_y[6*i])
+            v.append(_y[6*i + 1])
+            w.append(_y[6*i + 2])            
+            
+            x.append(_y[6*i + 3])
+            y.append(_y[6*i + 4])
+            z.append(_y[6*i + 5])
+        
+        gsys = []        
+
+        for i in range(length): 
+            #dr/dt = v
+            gsys.append(u[i])
+            gsys.append(v[i])
+            gsys.append(w[i])
+            
+            #dv/dt = sum
+            ax_sum = 0
+            ay_sum = 0
+            az_sum = 0
+            for j in range(length):
+                module = sqrt((x[i] - x[j])**2 + (y[i] - y[j])**2 + (z[i] - z[j])**2)**3
+                const = G * m_n[j]
+                if module > 0:
+                    ax_sum += const * (x[j] - x[i]) / module
+                    ay_sum += const * (y[j] - y[i]) / module
+                    az_sum += const * (z[j] - z[i]) / module
+            gsys.append(ax_sum)
+            gsys.append(ay_sum)
+            gsys.append(az_sum)
+
+        return gsys
+    
+    
+    prev = []
+    for i in range(length): 
+        prev.append(u_n[i])
+        prev.append(v_n[i])
+        prev.append(w_n[i])
+        
+        prev.append(x_n[i])
+        prev.append(y_n[i])
+        prev.append(z_n[i])   
+        
+    res = odeint(gravitySystem, prev, times)
+
+    x_n1 = []
+    y_n1 = [] 
+    z_n1 = [] 
+    u_n1 = [] 
+    v_n1 = [] 
+    w_n1 = []
+    for i in range(length):
+        u_n1.append(res[1, 6*i])
+        v_n1.append(res[1, 6*i + 1])
+        w_n1.append(res[1, 6*i + 2])
+        x_n1.append(res[1, 6*i + 3])
+        y_n1.append(res[1, 6*i + 4])
+        z_n1.append(res[1, 6*i + 5])
+
+    return [x_n1, y_n1, z_n1, u_n1, v_n1, w_n1]      

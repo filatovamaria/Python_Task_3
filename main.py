@@ -6,16 +6,15 @@ Created on Fri Jan  4 16:14:47 2019
 """
 
 import random
-import time
 
 import classes as myClass
-import calculation as calc
+import calculations as calc
 
 mytype = 1
 rang = 100
 
 _dt = 1000
-isSolar = False
+isSolar = True
 
 
 _particle_list = []
@@ -47,41 +46,9 @@ else:
         _particle_list.append(
                 myClass.Particle(myClass.Position(random.randint(-500, 500), random.randint(-500, 500), random.randint(-500, 500)), myClass.Velocity(random.randint(-5, 5) / 10000.0, random.randint(-5, 5) / 10000.0, random.randint(-5, 5) / 10000.0), random.uniform(100, 1000), [random.uniform(0.3, 0.9), random.uniform(0.3, 0.9), random.uniform(0.3, 0.9)]))
    
-times = []
-for i in range(5):
-    start_time = time.time()    
+if isSolar:
+    _particle_list = calc.CalculateSolar(mytype, _particle_list, _dt)
+else:
+    times = calc.Calculate(mytype, _particle_list, _dt)
     
-    if (mytype == 0):
-        if isSolar:
-            _particle_list = calc.Calculations.CalculateOdeintSolar(_particle_list, _dt)
-        else:
-            _particle_list = calc.Calculations.CalculateOdeint(_particle_list, _dt)
-    
-    elif (mytype == 1):
-        if isSolar:
-            _particle_list = calc.Calculations.CalculateVerletSolar(_particle_list, _dt)
-        else:
-            _particle_list = calc.Calculations.CalculateVerlet(_particle_list, _dt)
-    
-    elif (mytype == 2):
-        if isSolar:
-            _particle_list = calc.Calculations.CalculateParallSolar(_particle_list,_dt)
-        else:
-            _particle_list = calc.Calculations.CalculateParall(_particle_list, _dt)
-            
-    elif (mytype == 3):
-        if isSolar:
-            _particle_list = calc.Calculations.CalculateParallSolar(_particle_list, _dt)
-        else:
-            _particle_list = calc.Calculations.CalculateParall(_particle_list, _dt)
-    
-    else:
-        if isSolar:
-            _particle_list = calc.Calculations.CalculateCythonSolar(_particle_list,_dt)
-        else:
-            _particle_list = calc.Calculations.CalculateCython(_particle_list, _dt)
-    
-    times[i] = time.time() - start_time
-    
-
-print("--- %s seconds ---" % (sum(times)/5))
+    print("--- %s seconds ---" % (sum(times)/5))
